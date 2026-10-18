@@ -48,7 +48,7 @@ switch (command) {
 void Build() {
     Directory.CreateDirectory(Out);
 
-    var corelibSources = Sources("runtime", ".cs");
+    var corelibSources = Sources("corelib", ".cs");
     var corelib = $"{Out}/corelib.dll";
     if (Stale(corelib, corelibSources)) {
         Step("csc corelib", "dotnet", [csc, ..cscFlags, "/target:library", $"/out:{corelib}", ..corelibSources]);
