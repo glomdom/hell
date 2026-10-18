@@ -4,4 +4,6 @@
 
 namespace System;
 
-public class Object {}
+public class Object {
+    private IntPtr _methodTable;
+}

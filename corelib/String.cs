@@ -4,4 +4,28 @@
 
 namespace System;
 
-public sealed class String {}
+public sealed class String {
+    public int Length => _length;
+
+    private readonly int _length;
+    private char _first;
+
+    [IndexerName("Chars")]
+    public unsafe char this[int index] {
+        get {
+            if ((uint)index >= (uint)_length) {
+                RuntimeImports.FailFast("index out of range");
+
+                return '\0';
+            }
+
+            fixed (char* p = &_first) {
+                return p[index];
+            }
+        }
+    }
+
+    public ref readonly char GetPinnableReference() {
+        return ref _first;
+    }
+}
