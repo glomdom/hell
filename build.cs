@@ -25,7 +25,7 @@ switch (command) {
 
     case "run": {
         Build();
-        Run("qemu-system-riscv64", ["-machine", "virt", "-bios", "default", "-kernel", $"{Out}/kernel.elf", "-serial", "stdio"]);
+        Run("qemu-system-riscv64", ["-machine", "virt", "-bios", "default", "-kernel", $"{Out}/hell.elf", "-serial", "stdio", "-no-shutdown"]);
 
         break;
     }
@@ -75,9 +75,9 @@ void Build() {
         objects.Add(obj);
     }
 
-    var elf = $"{Out}/kernel.elf";
+    var elf = $"{Out}/hell.elf";
     if (Stale(elf, [..objects, "src/linker.ld"])) {
-        Step("ld.lld kernel.elf", ld, ["-T", "src/linker.ld", "-o", elf, ..objects]);
+        Step("ld.lld hell.elf", ld, ["-T", "src/linker.ld", "-o", elf, ..objects]);
     }
 
     Console.ForegroundColor = ConsoleColor.Green;
