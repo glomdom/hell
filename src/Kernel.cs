@@ -6,8 +6,6 @@ using System.Runtime;
 using System.Runtime.CompilerServices;
 
 unsafe class Kernel {
-    static void Main() {}
-
     [MethodImpl(MethodImplOptions.InternalCall)]
     [RuntimeImport("sbi_call")]
     static extern long SbiCall(ulong eid, ulong fid, ulong arg0, ulong arg1, ulong arg2);

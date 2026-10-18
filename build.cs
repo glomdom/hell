@@ -57,12 +57,12 @@ void Build() {
     var kernelSources = Sources("src", ".cs");
     var kernelIl = $"{Out}/kernel.ilexe";
     if (Stale(kernelIl, [..kernelSources, corelib])) {
-        Step("csc kernel", "dotnet", [csc, ..cscFlags, $"/out:{kernelIl}", $"/r:{corelib}", ..kernelSources]);
+        Step("csc kernel", "dotnet", [csc, ..cscFlags, "/target:library", $"/out:{kernelIl}", $"/r:{corelib}", ..kernelSources]);
     }
 
     var kernelObj = $"{Out}/kernel.o";
     if (Stale(kernelObj, [kernelIl, corelib])) {
-        Step("ilc kernel.o", ilc, [kernelIl, corelib, "-o", kernelObj, "--systemmodule", "corelib", "--targetos", "linux", "--targetarch", "riscv64", "-O", "--map", $"{Out}/kernel.map"]);
+        Step("ilc kernel.o", ilc, [kernelIl, corelib, "-o", kernelObj, "--nativelib", "--systemmodule", "corelib", "--targetos", "linux", "--targetarch", "riscv64", "-O", "--map", $"{Out}/kernel.map"]);
     }
 
     List<string> objects = [kernelObj];
