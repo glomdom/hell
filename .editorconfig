@@ -6,3 +6,4 @@ indent_size = 4
 csharp_new_line_before_open_brace = none
 csharp_prefer_braces = true:warning
 dotnet_diagnostic.IDE0130.severity = none
+resharper_function_never_returns_highlighting = none
