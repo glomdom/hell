@@ -14,15 +14,38 @@ internal class Hell {
     private static unsafe void Main(ulong hartId, byte* dtb) {
         Console.WriteLine("welcome to hell");
 
-        var headerReader = new BigEndianReader(dtb, dtb + 0x28);
-        var header = Fdt.ParseHeader(headerReader);
-        
-        Console.Write("using dtb version: ");
-        Console.WriteLine(header.Version);
+        var fdt = new Fdt(dtb);
 
-        var structsReader = new BigEndianReader(dtb, dtb + header.TotalSize);
-        structsReader.GoTo(header.StructsOffset);
-        Fdt.ParseStructs(structsReader, header);
+        if (fdt.TryFindDeviceType("memory", out var memory)) {
+            var count = fdt.RegCount(memory);
+
+            for (var i = 0u; i < count; i++) {
+                fdt.GetReg(memory, i, out var addr, out var size);
+                
+                Console.Write("ram       ");
+                Console.WriteHex(addr);
+                Console.Write(" - ");
+                Console.WriteHexLine(addr + size);
+            }
+        }
+        
+        if (fdt.TryFindNode("/reserved-memory", out var reserved) && fdt.TryGetFirstChild(reserved, out var region)) {
+            do {
+                fdt.GetReg(region, 0, out var addr, out var size);
+                
+                Console.Write("reserved  ");
+                Console.WriteHex(addr);
+                Console.Write(" - ");
+                Console.WriteHexLine(addr + size);
+            } while (fdt.TryGetNextSibling(region, out region));
+        }
+        
+        for (var i = 0u; fdt.TryGetMemoryReservation(i, out var addr, out var size); i++) {
+            Console.Write("rsvmap    ");
+            Console.WriteHex(addr);
+            Console.Write(" - ");
+            Console.WriteHexLine(addr + size);
+        }
 
         while (true) { }
     }

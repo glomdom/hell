@@ -60,8 +60,8 @@ public static class Console {
 
         Write(&nl, 1);
     }
-
-    public static unsafe void WriteHexLine(ulong value) {
+    
+    public static unsafe void WriteHex(ulong value) {
         var buf = stackalloc byte[18];
         buf[0] = (byte)'0';
         buf[1] = (byte)'x';
@@ -72,6 +72,10 @@ public static class Console {
         }
 
         Write(buf, 18);
+    }
+
+    public static unsafe void WriteHexLine(ulong value) {
+        WriteHex(value);
         WriteLine();
     }
 
