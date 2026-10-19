@@ -21,8 +21,10 @@ _start:
   addi t0, t0, 8
   j 1b
 2:
-  call kmain
+  la t0, trap_entry
+  csrw stvec, t0
 
+  call kmain
 3:
   wfi
   j 3b

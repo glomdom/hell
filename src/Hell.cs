@@ -21,25 +21,25 @@ internal class Hell {
 
             for (var i = 0u; i < count; i++) {
                 fdt.GetReg(memory, i, out var addr, out var size);
-                
+
                 Console.Write("ram       ");
                 Console.WriteHex(addr);
                 Console.Write(" - ");
                 Console.WriteHexLine(addr + size);
             }
         }
-        
+
         if (fdt.TryFindNode("/reserved-memory", out var reserved) && fdt.TryGetFirstChild(reserved, out var region)) {
             do {
                 fdt.GetReg(region, 0, out var addr, out var size);
-                
+
                 Console.Write("reserved  ");
                 Console.WriteHex(addr);
                 Console.Write(" - ");
                 Console.WriteHexLine(addr + size);
             } while (fdt.TryGetNextSibling(region, out region));
         }
-        
+
         for (var i = 0u; fdt.TryGetMemoryReservation(i, out var addr, out var size); i++) {
             Console.Write("rsvmap    ");
             Console.WriteHex(addr);
@@ -47,10 +47,8 @@ internal class Hell {
             Console.WriteHexLine(addr + size);
         }
 
-        while (true) { }
-    }
+        _ = *(ulong*)0x1;
 
-    private static unsafe uint ReadBe32(byte* p) {
-        return (uint)p[0] << 24 | (uint)p[1] << 16 | (uint)p[2] << 8 | p[3];
+        while (true) { }
     }
 }

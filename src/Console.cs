@@ -32,6 +32,10 @@ public static class Console {
         }
     }
 
+    public static void Write(bool b) {
+        Write(b ? "true" : "false");
+    }
+
     public static unsafe void WriteLine(byte* buf, int len) {
         Write(buf, len);
         WriteLine();
@@ -47,6 +51,11 @@ public static class Console {
         } while (value != 0);
 
         Write(buf + pos, 20 - pos);
+        WriteLine();
+    }
+    
+    public static void WriteLine(bool b) {
+        Write(b ? "true" : "false");
         WriteLine();
     }
 
