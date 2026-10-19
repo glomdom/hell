@@ -11,7 +11,7 @@ var ld = OperatingSystem.IsWindows() ? "ld.lld.exe" : "ld.lld"; // maybe unhardc
 
 const string Out = "build";
 
-string[] cscFlags = ["/nologo", "/noconfig", "/nostdlib", "/unsafe", "/nullable", "/langversion:latest", "/runtimemetadataversion:v4.0.30319"];
+string[] cscFlags = ["/nologo", "/noconfig", "/nostdlib", "/unsafe", "/nullable", "/debug:portable", "/langversion:latest", "/runtimemetadataversion:v4.0.30319"];
 string[] asmFlags = ["--target=riscv64", "-march=rv64gc", "-mabi=lp64d"];
 
 var command = args.Length > 0 ? args[0] : "build";
@@ -62,7 +62,7 @@ void Build() {
 
     var kernelObj = $"{Out}/kernel.o";
     if (Stale(kernelObj, [kernelIl, corelib])) {
-        Step("ilc kernel.o", ilc, [kernelIl, corelib, "-o", kernelObj, "--nativelib", "--systemmodule", "corelib", "--targetos", "linux", "--targetarch", "riscv64", "-O", "--map", $"{Out}/kernel.map"]);
+        Step("ilc kernel.o", ilc, [kernelIl, corelib, "-o", kernelObj, "--nativelib", "-g", "--systemmodule", "corelib", "--targetos", "linux", "--targetarch", "riscv64", "-O", "--map", $"{Out}/kernel.map"]);
     }
 
     List<string> objects = [kernelObj];
