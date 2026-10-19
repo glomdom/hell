@@ -6,12 +6,10 @@ namespace Hell;
 public class Panic {
     [DoesNotReturn]
     public static void WithMessage(string message) {
-        Console.Println("panic: ");
-        Console.Println(message);
+        Console.Write("panic: ");
+        Console.WriteLine(message);
 
-        unsafe {
-            Sbi.Shutdown(true); // maybe write to qemu's test device after as well
-        }
+        Sbi.Shutdown(true); // maybe write to qemu's test device after as well
 
         while (true) { }
     }

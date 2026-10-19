@@ -18,34 +18,7 @@ public static class Console {
         }
     }
 
-    public static unsafe void PrintDec(ulong value) {
-        var buf = stackalloc byte[20];
-        var pos = 20;
-
-        do {
-            buf[--pos] = (byte)('0' + value % Ten());
-            value /= Ten();
-        } while (value != 0);
-
-        Write(buf + pos, 20 - pos);
-        Println();
-    }
-    
-    public static unsafe void PrintHex(ulong value) {
-        var buf = stackalloc byte[18];
-        buf[0] = (byte)'0';
-        buf[1] = (byte)'x';
-
-        for (var i = 0; i < 16; i++) {
-            var nibble = (int)((value >> ((15 - i) * 4)) & 0xF);
-            buf[2 + i] = (byte)(nibble < 10 ? '0' + nibble : 'a' + nibble - 10);
-        }
-
-        Write(buf, 18);
-        Println();
-    }
-
-    public static unsafe void Print(string s) {
+    public static unsafe void Write(string s) {
         var buf = stackalloc byte[256];
         var i = 0;
 
@@ -58,18 +31,50 @@ public static class Console {
             Write(buf, n);
         }
     }
-    
-    public static void Println(string s) {
-        Print(s);
-        Println();
+
+    public static unsafe void WriteLine(byte* buf, int len) {
+        Write(buf, len);
+        WriteLine();
     }
 
-    public static unsafe void Println() {
+    public static unsafe void WriteLine(ulong value) {
+        var buf = stackalloc byte[20];
+        var pos = 20;
+
+        do {
+            buf[--pos] = (byte)('0' + value % Ten());
+            value /= Ten();
+        } while (value != 0);
+
+        Write(buf + pos, 20 - pos);
+        WriteLine();
+    }
+
+    public static void WriteLine(string s) {
+        Write(s);
+        WriteLine();
+    }
+
+    public static unsafe void WriteLine() {
         var nl = (byte)'\n';
 
         Write(&nl, 1);
     }
-    
+
+    public static unsafe void WriteHexLine(ulong value) {
+        var buf = stackalloc byte[18];
+        buf[0] = (byte)'0';
+        buf[1] = (byte)'x';
+
+        for (var i = 0; i < 16; i++) {
+            var nibble = (int)((value >> ((15 - i) * 4)) & 0xF);
+            buf[2 + i] = (byte)(nibble < 10 ? '0' + nibble : 'a' + nibble - 10);
+        }
+
+        Write(buf, 18);
+        WriteLine();
+    }
+
     // workaround while waiting for https://github.com/dotnet/runtime/issues/136034 to get fixed
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static ulong Ten() {

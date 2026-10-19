@@ -4,6 +4,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime;
+using Hell.DeviceTree;
 
 namespace Hell;
 
@@ -11,12 +12,17 @@ internal class Hell {
     [DoesNotReturn]
     [RuntimeExport("kmain")]
     private static unsafe void Main(ulong hartId, byte* dtb) {
-        Console.Println("hell");
-        Console.PrintHex(0x80200000);
-        Console.PrintDec(1234);
+        Console.WriteLine("welcome to hell");
 
-        var magic = ReadBe32(dtb);
-        Console.PrintHex(magic);
+        var headerReader = new BigEndianReader(dtb, dtb + 0x28);
+        var header = Fdt.ParseHeader(headerReader);
+        
+        Console.Write("using dtb version: ");
+        Console.WriteLine(header.Version);
+
+        var structsReader = new BigEndianReader(dtb, dtb + header.TotalSize);
+        structsReader.GoTo(header.StructsOffset);
+        Fdt.ParseStructs(structsReader, header);
 
         while (true) { }
     }
