@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net11.0</TargetFramework>
-    <AssemblyName>kernel</AssemblyName>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
@@ -12,6 +11,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <RootNamespace>Hell</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
