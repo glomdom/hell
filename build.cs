@@ -77,7 +77,7 @@ void Build() {
 
     var elf = $"{Out}/hell.elf";
     if (Stale(elf, [..objects, "src/linker.ld"])) {
-        Step("ld.lld hell.elf", ld, ["-T", "src/linker.ld", "-o", elf, ..objects]);
+        Step("ld.lld hell.elf", ld, ["-T", "src/arch/riscv64/linker.ld", "-o", elf, ..objects]);
     }
 
     Console.ForegroundColor = ConsoleColor.Green;
@@ -86,9 +86,10 @@ void Build() {
 }
 
 string[] Sources(string dir, string extension) {
-    return Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories)
-        .Where(f => Path.GetExtension(f).Equals(extension, StringComparison.OrdinalIgnoreCase))
-        .ToArray();
+    return [
+        ..Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories)
+            .Where(f => Path.GetExtension(f).Equals(extension, StringComparison.OrdinalIgnoreCase))
+    ];
 }
 
 bool Stale(string output, IEnumerable<string> inputs) {
