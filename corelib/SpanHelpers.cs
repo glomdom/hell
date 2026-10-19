@@ -9,5 +9,4 @@ internal static class SpanHelpers {
 
     internal static void Memmove(ref byte dest, ref byte src, nuint len) {}
     internal static void Fill(ref byte dest, byte value, nuint len) {}
-
 }
