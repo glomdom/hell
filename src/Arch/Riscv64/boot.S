@@ -7,8 +7,7 @@
 _start:
   csrw sie, zero
 
-  # fixme(temporary): waiting on ryujit to merge sf pr
-  li t0, (1 << 13)
+  li t0, 0x6000
   csrs sstatus, t0
 
   la sp, __stack_top
