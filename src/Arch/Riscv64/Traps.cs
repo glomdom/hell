@@ -1,4 +1,5 @@
 using System.Runtime;
+using Hell.Time;
 
 namespace Hell.Arch.Riscv64;
 
@@ -9,24 +10,40 @@ public static class Traps {
         var code = (frame->Scause << 1) >> 1;
 
         if (isInterrupt) {
-            Console.Write("trap: unexpected interrupt ");
-            Console.WriteLine(code);
+            switch (code) {
+                case 5: {
+                    Timer.OnTick();
 
-            Panic.WithMessage("trap: unexpected interrupt");
+                    return;
+                }
+
+                default: {
+                    DumpFrame(frame, code);
+
+                    Console.Write("trap: unexpected interrupt ");
+                    Console.WriteLine(code);
+                    Panic.WithMessage("trap: unexpected interrupt");
+
+                    return;
+                }
+            }
         }
 
-        if (code == 3) {
-            Console.Write("trap: breakpoint at ");
-            Console.WriteHexLine(frame->Sepc);
+        switch (code) {
+            case 3: {
+                Console.Write("trap: unreachable code at ");
+                Console.WriteHexLine(frame->Sepc);
 
-            frame->Sepc += 2;
+                return;
+            }
 
-            return;
+            default: {
+                DumpFrame(frame, code);
+                Panic.WithMessage("trap: unhandled exception");
+                
+                return;
+            }
         }
-
-        DumpFrame(frame, code);
-
-        Panic.WithMessage("trap: unhandled exception");
     }
 
     private static unsafe void DumpFrame(TrapFrame* frame, ulong code) {

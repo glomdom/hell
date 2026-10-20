@@ -31,6 +31,18 @@ public static class Console {
             Write(buf, n);
         }
     }
+    
+    public static unsafe void Write(ulong value) {
+        var buf = stackalloc byte[20];
+        var pos = 20;
+
+        do {
+            buf[--pos] = (byte)('0' + value % Ten());
+            value /= Ten();
+        } while (value != 0);
+
+        Write(buf + pos, 20 - pos);
+    }
 
     public static void Write(bool b) {
         Write(b ? "true" : "false");
@@ -42,15 +54,7 @@ public static class Console {
     }
 
     public static unsafe void WriteLine(ulong value) {
-        var buf = stackalloc byte[20];
-        var pos = 20;
-
-        do {
-            buf[--pos] = (byte)('0' + value % Ten());
-            value /= Ten();
-        } while (value != 0);
-
-        Write(buf + pos, 20 - pos);
+        Write(value);
         WriteLine();
     }
     
