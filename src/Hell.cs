@@ -32,8 +32,34 @@ internal class Hell {
         }
         
         EnableInterrupts();
+        
+        var page1 = AllocatePage();
+        var page2 = AllocatePage();
+        var page3 = AllocatePage();
+        
+        FreePage(page1);
+        FreePage(page2);
+        FreePage(page3);
+
+        var page4 = AllocatePage();
+        FreePage(page4);
+        FreePage(page4);
 
         IdleCore();
+    }
+
+    private static ulong AllocatePage() {
+        var page = Freelist.Alloc();
+        Console.Write("freelist: allocated page ");
+        Console.WriteHexLine(page);
+
+        return page;
+    }
+    
+    private static void FreePage(ulong pageAddr) {
+        Freelist.Free(pageAddr);
+        Console.Write("freelist: freed page ");
+        Console.WriteHexLine(pageAddr);
     }
 
     [DoesNotReturn]

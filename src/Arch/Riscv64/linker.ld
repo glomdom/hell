@@ -8,6 +8,7 @@ ENTRY(_start)
 
 SECTIONS {
   . = 0x80200000;
+  _kernel_start = .;
 
   .text : {
     KEEP(*(.text.boot))
@@ -33,4 +34,6 @@ SECTIONS {
 
     __bss_end = .;
   }
+  
+  _kernel_end = .;
 }
