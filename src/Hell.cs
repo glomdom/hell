@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using Hell.DeviceTree;
+using Hell.Memory;
 using Hell.Time;
 
 namespace Hell;
@@ -18,38 +19,8 @@ internal class Hell {
         Console.WriteLine();
 
         var fdt = new Fdt(dtb);
-
-        if (fdt.TryFindDeviceType("memory", out var memory)) {
-            var count = fdt.RegCount(memory);
-
-            for (var i = 0u; i < count; i++) {
-                fdt.GetReg(memory, i, out var addr, out var size);
-
-                Console.Write("dtb: ram       ");
-                Console.WriteHex(addr);
-                Console.Write(" - ");
-                Console.WriteHexLine(addr + size);
-            }
-        }
-
-        if (fdt.TryFindNode("/reserved-memory", out var reserved) && fdt.TryGetFirstChild(reserved, out var region)) {
-            do {
-                fdt.GetReg(region, 0, out var addr, out var size);
-
-                Console.Write("dtb: reserved  ");
-                Console.WriteHex(addr);
-                Console.Write(" - ");
-                Console.WriteHexLine(addr + size);
-            } while (fdt.TryGetNextSibling(region, out region));
-        }
-
-        for (var i = 0u; fdt.TryGetMemoryReservation(i, out var addr, out var size); i++) {
-            Console.Write("dtb: rsvmap    ");
-            Console.WriteHex(addr);
-            Console.Write(" - ");
-            Console.WriteHexLine(addr + size);
-        }
         
+        Freelist.Init(in fdt);
         
         if (fdt.TryFindNode("/cpus", out var cpus) && fdt.TryGetU32(cpus, "timebase-frequency", out var frequency)) {
             Console.Write("dtb: timer ");

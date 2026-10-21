@@ -19,4 +19,8 @@ internal static class ThrowHelpers {
     internal static void ThrowDivideByZeroException() {
         RuntimeImports.FailFast("divide by zero");
     }
+
+    internal static void ThrowOverflowException() {
+        RuntimeImports.FailFast("overflow");
+    }
 }
