@@ -13,8 +13,6 @@ internal static class Timer {
     private static ulong _ticks;
     private static ulong _deadline;
     
-    // workaround while waiting for https://github.com/dotnet/runtime/issues/136034 to get fixed
-    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void Init(ulong frequency, ulong hz) {
         _interval = frequency / hz;
         _deadline = ReadClock() + _interval;

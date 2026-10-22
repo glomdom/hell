@@ -2,7 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-using System.Runtime.CompilerServices;
 using Hell.Arch.Riscv64;
 
 namespace Hell;
@@ -41,8 +40,8 @@ public static class Console {
         var pos = 20;
 
         do {
-            buf[--pos] = (byte)('0' + value % Ten());
-            value /= Ten();
+            buf[--pos] = (byte)('0' + value % 10);
+            value /= 10;
         } while (value != 0);
 
         Write(buf + pos, 20 - pos);
@@ -91,14 +90,8 @@ public static class Console {
         Write(buf, 18);
     }
 
-    public static unsafe void WriteHexLine(ulong value) {
+    public static void WriteHexLine(ulong value) {
         WriteHex(value);
         WriteLine();
-    }
-
-    // workaround while waiting for https://github.com/dotnet/runtime/issues/136034 to get fixed
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static ulong Ten() {
-        return 10;
     }
 }
