@@ -61,7 +61,7 @@ internal static unsafe class Freelist {
         }
 
         var address = _head;
-        var page = (FreePage*)PhysToVirt(address);
+        var page = (FreePage*)Addresses.PhysToVirt(address);
 
         if (page->Magic != FreeMagic) {
             Panic.WithMessage("freelist: corrupted free page (use after free?)");
@@ -78,7 +78,7 @@ internal static unsafe class Freelist {
 
     internal static ulong AllocZeroed() {
         var addr = Alloc();
-        var page = PhysToVirt(addr);
+        var page = Addresses.PhysToVirt(addr);
 
         for (var i = 2UL; i < PageSize; i++) {
             page[i] = 0;
@@ -92,7 +92,7 @@ internal static unsafe class Freelist {
             Panic.WithMessage("freelist: freeing unaligned address");
         }
 
-        var page = (FreePage*)PhysToVirt(address);
+        var page = (FreePage*)Addresses.PhysToVirt(address);
         if (page->Magic == FreeMagic) {
             Console.Write("freelist: found already free magic at ");
             Console.WriteHexLine(address);
@@ -101,10 +101,6 @@ internal static unsafe class Freelist {
         }
 
         Push(address);
-    }
-    
-    internal static byte* PhysToVirt(ulong physAddr) {
-        return (byte*)physAddr;
     }
 
     private static void CollectReserved(ref readonly Fdt fdt, ulong* ranges, ref int count) {
@@ -162,7 +158,7 @@ internal static unsafe class Freelist {
     }
 
     private static void Push(ulong address) {
-        var page = (FreePage*)PhysToVirt(address);
+        var page = (FreePage*)Addresses.PhysToVirt(address);
         page->Next = _head;
         page->Magic = FreeMagic;
 

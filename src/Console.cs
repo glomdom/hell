@@ -3,6 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 using Hell.Arch.Riscv64;
+using Hell.Memory;
 
 namespace Hell;
 
@@ -12,7 +13,7 @@ public static class Console {
         while (done < len) {
             long written;
 
-            var err = Sbi.ConsoleWrite(buf + done, (ulong)(len - done), &written);
+            var err = Sbi.ConsoleWrite(Addresses.VirtToPhys((ulong)buf + (ulong)done), (ulong)(len - done), &written);
             if (err != 0 || written <= 0) {
                 return;
             }
