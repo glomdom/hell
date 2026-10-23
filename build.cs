@@ -25,7 +25,7 @@ switch (command) {
 
     case "run": {
         Build();
-        Run("qemu-system-riscv64", ["-machine", "virt", "-bios", "default", "-kernel", $"{Out}/hell.elf", "-serial", "stdio", "-no-shutdown"]);
+        Run("qemu-system-riscv64", ["-machine", "virt", "-bios", "default", "-kernel", $"{Out}/hell.elf", "-serial", "stdio", "-monitor", "tcp:127.0.0.1:4444,server,nowait", "-no-shutdown"]);
 
         break;
     }
@@ -62,7 +62,7 @@ void Build() {
 
     var kernelObj = $"{Out}/kernel.o";
     if (Stale(kernelObj, [kernelIl, corelib])) {
-        Step("ilc kernel.o", ilc, [kernelIl, corelib, "-o", kernelObj, "--nativelib", "-g", "--systemmodule", "corelib", "--targetos", "linux", "--targetarch", "riscv64", "-O", "--map", $"{Out}/kernel.map"]);
+        Step("ilc kernel.o", ilc, [kernelIl, corelib, "-o", kernelObj, "--nativelib", "-g", "--systemmodule", "corelib", "--targetos", "linux", "--targetarch", "riscv64", "-O", "--map", $"{Out}/kernel.map", "--jitpath", @"C:\src\runtime\artifacts\bin\coreclr\windows.x64.Checked\clrjit_unix_riscv64_x64.dll"]);
     }
 
     List<string> objects = [kernelObj];

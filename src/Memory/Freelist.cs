@@ -76,6 +76,17 @@ internal static unsafe class Freelist {
         return address;
     }
 
+    internal static ulong AllocZeroed() {
+        var addr = Alloc();
+        var page = PhysToVirt(addr);
+
+        for (var i = 2UL; i < PageSize; i++) {
+            page[i] = 0;
+        }
+
+        return addr;
+    }
+
     internal static void Free(ulong address) {
         if ((address & (PageSize - 1)) != 0) {
             Panic.WithMessage("freelist: freeing unaligned address");
@@ -90,6 +101,10 @@ internal static unsafe class Freelist {
         }
 
         Push(address);
+    }
+    
+    internal static byte* PhysToVirt(ulong physAddr) {
+        return (byte*)physAddr;
     }
 
     private static void CollectReserved(ref readonly Fdt fdt, ulong* ranges, ref int count) {
@@ -161,10 +176,6 @@ internal static unsafe class Freelist {
 
     private static ulong RoundUp(ulong value) {
         return ((value + PageSize - 1) >> 12) << 12;
-    }
-
-    private static byte* PhysToVirt(ulong physAddr) {
-        return (byte*)physAddr;
     }
     
     private static bool Overlaps(ulong page, ulong start, ulong end) {
