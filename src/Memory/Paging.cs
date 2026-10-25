@@ -43,14 +43,14 @@ internal static class Paging {
         DumpTable(_root, 2, 0);
     }
 
-    internal static unsafe void DumpTable(ulong tablePhys, sbyte level, ulong baseVirt) {
+    internal static unsafe void DumpTable(ulong tablePhys, byte level, ulong baseVirt) {
         var table = (ulong*)Addresses.PhysToVirt(tablePhys);
 
         for (var i = 0UL; i < 512; i++) {
             var pte = table[i];
 
             var flags = (PageTableEntryFlags)(pte & 0xFF);
-            if ((flags & PageTableEntryFlags.Valid) == 0) {
+            if (!IsFlagSet(flags, PageTableEntryFlags.Valid)) {
                 continue;
             }
 
@@ -77,8 +77,51 @@ internal static class Paging {
                 Console.Write(IsFlagSet(flags, PageTableEntryFlags.Dirty) ? "d" : "-");
 
                 Console.WriteLine();
+            } else {
+                if (level - 1 < 0) {
+                    Panic.WithMessage("paging: malformed page table");
+                }
+                
+                DumpTable(phys, (byte)(level - 1), virt);
             }
         }
+    }
+
+    internal static unsafe void Map(ulong virt, ulong phys, PageTableEntryFlags flags) {
+        var table = (ulong*)Addresses.PhysToVirt(_root);
+
+        for (var level = 2; level > 0; level--) {
+            var index = (virt >> (12 + 9 * level)) & 0x1FF;
+            var entry = table[index];
+            var entryFlags = (PageTableEntryFlags)(entry & 0xFF);
+
+            ulong nextPhys;
+
+            if (!IsFlagSet(entryFlags, PageTableEntryFlags.Valid)) {
+                nextPhys = Freelist.AllocZeroed();
+                table[index] = Entry(nextPhys, PageTableEntryFlags.Valid);
+            } else if ((entryFlags & (PageTableEntryFlags.Read | PageTableEntryFlags.Write | PageTableEntryFlags.Execute)) != 0) {
+                Panic.WithMessage("paging: address already covered by a superpage");
+
+                return;
+            } else {
+                nextPhys = Entry(entry, PageTableEntryFlags.None);
+            }
+
+            table = (ulong*)Addresses.PhysToVirt(nextPhys);
+        }
+
+        var l0Index = (virt >> 12) & 0x1FF;
+        var l0Entry = table[l0Index];
+        
+        var l0Flags = (PageTableEntryFlags)(l0Entry & 0xFF);
+        if (IsFlagSet(l0Flags, PageTableEntryFlags.Valid)) {
+            Panic.WithMessage("paging: address already mapped");
+        }
+
+        table[l0Index] = Entry(phys, flags | PageTableEntryFlags.Valid);
+
+        SfenceVmaPage(virt);
     }
 
     private static ulong Entry(ulong phys, PageTableEntryFlags flags) {
@@ -93,4 +136,7 @@ internal static class Paging {
     [RuntimeImport("write_satp")]
     private static extern void WriteSatp(ulong value);
     
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    [RuntimeImport("sfence_vma_page")]
+    private static extern void SfenceVmaPage(ulong virt);
 }
