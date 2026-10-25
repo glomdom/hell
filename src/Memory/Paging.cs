@@ -100,7 +100,7 @@ internal static class Paging {
             if (!IsFlagSet(entryFlags, PageTableEntryFlags.Valid)) {
                 nextPhys = Freelist.AllocZeroed();
                 table[index] = Entry(nextPhys, PageTableEntryFlags.Valid);
-            } else if ((entryFlags & (PageTableEntryFlags.Read | PageTableEntryFlags.Write | PageTableEntryFlags.Execute)) != 0) {
+            } else if (IsFlagSet(entryFlags, PageTableEntryFlags.Read | PageTableEntryFlags.Write | PageTableEntryFlags.Execute)) {
                 Panic.WithMessage("paging: address already covered by a superpage");
 
                 return;
