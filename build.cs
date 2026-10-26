@@ -76,7 +76,7 @@ void Build() {
     }
 
     var elf = $"{Out}/hell.elf";
-    if (Stale(elf, [..objects, "src/linker.ld"])) {
+    if (Stale(elf, [..objects, "src/Arch/Riscv64/linker.ld"])) {
         Step("ld.lld hell.elf", ld, ["-T", "src/arch/riscv64/linker.ld", "-o", elf, ..objects]);
     }
 
