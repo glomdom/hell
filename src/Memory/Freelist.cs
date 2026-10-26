@@ -18,7 +18,6 @@ internal static unsafe class Freelist {
     
     // FIXME: temporarily fitting in 32-bit because of our favorite issue https://github.com/dotnet/runtime/issues/136034
     private const ulong FreeMagic = 0x46524545; // haha get it its "FREE" in ascii
-    private const ulong PageSize = 4096;
     private const int MaxReservedRanges = 32;
 
     private static ulong _head;
@@ -80,7 +79,7 @@ internal static unsafe class Freelist {
         var addr = Alloc();
         var page = Addresses.PhysToVirt(addr);
 
-        for (var i = 2UL; i < PageSize; i++) {
+        for (var i = 2UL; i < Paging.PageSize; i++) {
             page[i] = 0;
         }
 
@@ -88,7 +87,7 @@ internal static unsafe class Freelist {
     }
 
     internal static void Free(ulong address) {
-        if ((address & (PageSize - 1)) != 0) {
+        if ((address & (Paging.PageSize - 1)) != 0) {
             Panic.WithMessage("freelist: freeing unaligned address");
         }
 
@@ -146,7 +145,7 @@ internal static unsafe class Freelist {
         var first = RoundUp(start);
         var last = RoundDown(end);
 
-        outer: for (var page = first; page < last; page += PageSize) {
+        outer: for (var page = first; page < last; page += Paging.PageSize) {
             for (var i = 0; i < count; i++) {
                 if (Overlaps(page, ranges[i * 2], ranges[i * 2 + 1])) {
                     continue outer;
@@ -171,11 +170,11 @@ internal static unsafe class Freelist {
     }
 
     private static ulong RoundUp(ulong value) {
-        return ((value + PageSize - 1) >> 12) << 12;
+        return ((value + Paging.PageSize - 1) >> 12) << 12;
     }
     
     private static bool Overlaps(ulong page, ulong start, ulong end) {
-        return page < end && page + PageSize > start;
+        return page < end && page + Paging.PageSize > start;
     }
 
     [MethodImpl(MethodImplOptions.InternalCall)]

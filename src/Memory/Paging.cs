@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 namespace Hell.Memory;
 
 internal static class Paging {
+    public const ulong PageSize = 4096;
+    
     private static ulong _root;
 
     internal static unsafe void Init(ulong ramStart) {
@@ -11,23 +13,19 @@ internal static class Paging {
 
         var addr = (ulong*)Addresses.PhysToVirt(_root);
 
-        var index = (ramStart >> 30) & 0x1FF;
+        var index = ((Addresses.DirectMapBase + ramStart) >> 30) & 0x1FF;
         var entry = Entry(
-            ramStart,
-            PageTableEntryFlags.Valid | PageTableEntryFlags.Read | PageTableEntryFlags.Write |
-            PageTableEntryFlags.Execute | PageTableEntryFlags.Accessed | PageTableEntryFlags.Dirty
-        );
-
-        addr[index] = entry;
-
-        index = (0xffffffc080200000 >> 30) & 0x1FF;
-        entry = Entry(
             ramStart,
             PageTableEntryFlags.Valid | PageTableEntryFlags.Read | PageTableEntryFlags.Write |
             PageTableEntryFlags.Accessed | PageTableEntryFlags.Dirty
         );
         
         addr[index] = entry;
+
+        MapSection(Sections.TextStart, Sections.TextEnd, PageTableEntryFlags.Read | PageTableEntryFlags.Execute | PageTableEntryFlags.Accessed);
+        MapSection(Sections.RodataStart, Sections.RodataEnd, PageTableEntryFlags.Read | PageTableEntryFlags.Accessed);
+        MapSection(Sections.DataStart, Sections.DataEnd, PageTableEntryFlags.Read | PageTableEntryFlags.Write | PageTableEntryFlags.Accessed | PageTableEntryFlags.Dirty);
+        MapSection(Sections.BssStart, Sections.BssEnd, PageTableEntryFlags.Read | PageTableEntryFlags.Write | PageTableEntryFlags.Accessed | PageTableEntryFlags.Dirty);
 
         var satp = (8UL << 60) | (_root >> 12);
         WriteSatp(satp);
@@ -40,6 +38,7 @@ internal static class Paging {
             Panic.WithMessage("paging: attempted to dump pages without root");
         }
         
+        Console.WriteLine("                va                    pa               size    flags");
         DumpTable(_root, 2, 0);
     }
 
@@ -64,7 +63,7 @@ internal static class Paging {
                 Console.WriteHex(printableVirt);
                 Console.Write(" -> ");
                 Console.WriteHex(phys);
-                Console.Write(" size ");
+                Console.Write(" ");
                 Console.WriteHex(size);
                 Console.Write("  ");
 
@@ -105,7 +104,7 @@ internal static class Paging {
 
                 return;
             } else {
-                nextPhys = Entry(entry, PageTableEntryFlags.None);
+                nextPhys = EntryToPhys(entry);
             }
 
             table = (ulong*)Addresses.PhysToVirt(nextPhys);
@@ -124,10 +123,20 @@ internal static class Paging {
         SfenceVmaPage(virt);
     }
 
+    private static void MapSection(ulong start, ulong end, PageTableEntryFlags flags) {
+        for (var i = start; i < end; i += PageSize) {
+            Map(i, i, flags);
+        }
+    }
+
     private static ulong Entry(ulong phys, PageTableEntryFlags flags) {
         return (phys >> 12) << 10 | (ulong)flags;
     }
 
+    private static ulong EntryToPhys(ulong entry) {
+        return (entry >> 10) << 12;
+    }
+    
     private static bool IsFlagSet(PageTableEntryFlags flags, PageTableEntryFlags f) {
         return (flags & f) != 0;
     }

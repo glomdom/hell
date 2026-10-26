@@ -6,25 +6,46 @@
 OUTPUT_ARCH(riscv)
 ENTRY(_start)
 
+PAGE_SIZE = 4096;
+
 SECTIONS {
   . = 0x80200000;
   _kernel_start = .;
 
-  .text : {
+  .text : ALIGN(PAGE_SIZE) {
+    _text_start = .;
+
     KEEP(*(.text.boot))
     *(.text .text.*)
+    *(__managedcode)
+
+    _text_end = .;
   }
 
-  .rodata : ALIGN(16) {
+  .rodata : ALIGN(PAGE_SIZE) {
+    _rodata_start = .;
+
     *(.rodata .rodata.*)
+    *(.srodata .srodata.*)
+    *(.dotnet_eh_table)
+    *(.eh_frame)
+    KEEP(*(__modules))
+
+    _rodata_end = .;
   }
 
-  .data : ALIGN(16) {
+  .data : ALIGN(PAGE_SIZE) {
+    _data_start = .;
+
     *(.data .data.*)
+    *(.data.rel.ro .data.rel.ro.*)
     *(.sdata .sdata.*)
+
+    _data_end = .;
   }
 
-  .bss : ALIGN(16) {
+  .bss (NOLOAD) : ALIGN(PAGE_SIZE) {
+    _bss_start = .;
     __bss_start = .;
 
     *(.sbss .sbss.*)
@@ -33,7 +54,9 @@ SECTIONS {
     . = ALIGN(16);
 
     __bss_end = .;
+    _bss_end = .;
   }
-  
+
+  . = ALIGN(PAGE_SIZE);
   _kernel_end = .;
 }

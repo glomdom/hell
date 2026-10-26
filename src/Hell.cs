@@ -34,22 +34,14 @@ internal class Hell {
         EnableInterrupts();
 
         Paging.Init(0x80000000);
-
-        var phys = Freelist.AllocZeroed();
-        var virt = 0xFFFFFFD000000000;
-        
-        Paging.Map(virt, phys, PageTableEntryFlags.Read | PageTableEntryFlags.Write | PageTableEntryFlags.Accessed | PageTableEntryFlags.Dirty);
-
-        var p = (byte*)virt;
-        *p = 0x67;
-        
-        Console.WriteHexLine(*p);
         Paging.Dump();
-        
 
+        var ptr = (byte*)Sections.TextStart;
+        ptr[0] = 2;
+        
         IdleCore();
     }
-
+    
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.InternalCall)]
     [RuntimeImport("enable_interrupts")]

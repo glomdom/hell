@@ -1,7 +1,7 @@
 namespace Hell.Memory;
 
 internal static unsafe class Addresses {
-    private const ulong DirectMapBase = 0xFFFFFFC000000000;
+    public const ulong DirectMapBase = 0xFFFFFFC000000000;
 
     private static ulong _physOffset = 0;
 
