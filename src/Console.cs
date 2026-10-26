@@ -57,7 +57,7 @@ public static class Console {
         WriteLine();
     }
 
-    public static unsafe void WriteLine(ulong value) {
+    public static void WriteLine(ulong value) {
         Write(value);
         WriteLine();
     }
