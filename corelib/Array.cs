@@ -1,3 +1,5 @@
 namespace System;
 
-public abstract class Array {}
+public abstract class Array {
+    public int Length;
+}

@@ -12,6 +12,21 @@ public class RuntimeExports {
     private static void RhpThrowEx(object exception) {
         Panic.WithMessage(((Exception)exception).Message);
     }
+    
+    [RuntimeExport("RhpNewFast")]
+    private static void RhpNewFast() {
+        Panic.WithMessage("alloc: new called");
+    }
+    
+    [RuntimeExport("RhpAssignRefRiscV64")]
+    private static void RhpAssignRefRiscV64() {
+        Panic.WithMessage("alloc: ref assign");
+    }
+    
+    [RuntimeExport("RhpNewPtrArrayFast")]
+    private static void RhpNewPtrArrayFast() {
+        Panic.WithMessage("alloc: new array called");
+    }
 
     [RuntimeExport("RuntimeFailFast")]
     private static void FailFast(string message) {

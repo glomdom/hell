@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime;
 using System.Runtime.CompilerServices;
@@ -35,9 +36,10 @@ internal class Hell {
 
         Paging.Init(0x80000000);
         Paging.Dump();
+        
+        
 
-        var ptr = (byte*)Sections.TextStart;
-        ptr[0] = 2;
+        // HeapTest.Run();
         
         IdleCore();
     }

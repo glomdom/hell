@@ -23,4 +23,8 @@ internal static class ThrowHelpers {
     internal static void ThrowOverflowException() {
         RuntimeImports.FailFast("overflow");
     }
+    
+    internal static void ThrowIndexOutOfRangeException() {
+        RuntimeImports.FailFast("index out of range");
+    }
 }
