@@ -2,7 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime;
 using System.Runtime.CompilerServices;
@@ -37,8 +36,25 @@ internal class Hell {
         Paging.Init(0x80000000);
         Paging.Dump();
         
-        
+        Slab.DumpClass(1);
 
+        var a = Slab.Alloc(24);
+        var b = Slab.Alloc(24);
+        
+        Console.Write("slab: allocated 24 bytes at ");
+        Console.WriteHexLine(a);
+        Console.Write("slab: allocated 24 bytes at ");
+        Console.WriteHexLine(b);
+        
+        Console.Write("slab: freeing ");
+        Console.WriteHexLine(a);
+        Slab.Free(a, 24);
+        Slab.DumpClass(1);
+        Console.Write("slab: freeing ");
+        Console.WriteHexLine(b);
+        Slab.Free(b, 24);
+        Slab.DumpClass(1);
+        
         // HeapTest.Run();
         
         IdleCore();
