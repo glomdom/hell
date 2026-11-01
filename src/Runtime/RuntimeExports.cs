@@ -16,21 +16,27 @@ public class RuntimeExports {
     
     [RuntimeExport("RhpNewFast")]
     private static unsafe void* RhpNewFast(MethodTable* methodTable) {
-        var slot = (byte*)Slab.Alloc(methodTable->BaseSize);
+        var slot = Slab.Alloc(methodTable->BaseSize);
         var obj = slot + 8;
         *(MethodTable**)obj = methodTable;
 
         return obj;
     }
     
-    [RuntimeExport("RhpAssignRefRiscV64")]
-    private static void RhpAssignRefRiscV64() {
-        Panic.WithMessage("alloc: ref assign");
-    }
-    
     [RuntimeExport("RhpNewPtrArrayFast")]
-    private static void RhpNewPtrArrayFast() {
-        Panic.WithMessage("alloc: new array called");
+    private static unsafe void* RhpNewPtrArrayFast(MethodTable* methodTable, int length) {
+        if (length < 0) {
+            throw new IndexOutOfRangeException(); // change this to overflow exception
+        }
+
+        var size = methodTable->BaseSize + (ulong)length * methodTable->ComponentSize;
+
+        var slot = Slab.Alloc(size);
+        var obj = slot + 8;
+        *(MethodTable**)obj = methodTable;
+        *(int*)(obj + 8) = length;
+
+        return obj;
     }
 
     [RuntimeExport("RuntimeFailFast")]
