@@ -36,26 +36,7 @@ internal class Hell {
         Paging.Init(0x80000000);
         Paging.Dump();
         
-        Slab.DumpClass(1);
-
-        var a = Slab.Alloc(24);
-        var b = Slab.Alloc(24);
-        
-        Console.Write("slab: allocated 24 bytes at ");
-        Console.WriteHexLine(a);
-        Console.Write("slab: allocated 24 bytes at ");
-        Console.WriteHexLine(b);
-        
-        Console.Write("slab: freeing ");
-        Console.WriteHexLine(a);
-        Slab.Free(a, 24);
-        Slab.DumpClass(1);
-        Console.Write("slab: freeing ");
-        Console.WriteHexLine(b);
-        Slab.Free(b, 24);
-        Slab.DumpClass(1);
-        
-        // HeapTest.Run();
+        HeapTest.Run();
         
         IdleCore();
     }

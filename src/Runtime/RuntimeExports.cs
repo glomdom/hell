@@ -4,6 +4,7 @@
 
 using System;
 using System.Runtime;
+using Hell.Memory;
 
 namespace Hell.Runtime;
 
@@ -14,8 +15,12 @@ public class RuntimeExports {
     }
     
     [RuntimeExport("RhpNewFast")]
-    private static void RhpNewFast() {
-        Panic.WithMessage("alloc: new called");
+    private static unsafe void* RhpNewFast(MethodTable* methodTable) {
+        var slot = (byte*)Slab.Alloc(methodTable->BaseSize);
+        var obj = slot + 8;
+        *(MethodTable**)obj = methodTable;
+
+        return obj;
     }
     
     [RuntimeExport("RhpAssignRefRiscV64")]

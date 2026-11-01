@@ -3,13 +3,13 @@ namespace Hell.Memory;
 internal static unsafe class Slab {
     private static ClassHeads _heads;
     
-    internal static ulong Alloc(ulong size) {
+    internal static byte* Alloc(ulong size) {
         var sizeClass = ClassFor(size);
         if (_heads.Head[sizeClass] == 0) {
             Refill(sizeClass);
         }
 
-        var slot = _heads.Head[sizeClass];
+        var slot = (byte*)_heads.Head[sizeClass];
         _heads.Head[sizeClass] = ((ulong*)slot)[0];
 
         var words = (ulong*)slot;
@@ -21,15 +21,15 @@ internal static unsafe class Slab {
         return slot;
     }
 
-    internal static void Free(ulong slot, ulong size) {
+    internal static void Free(byte* slot, ulong size) {
         var sizeClass = ClassFor(size);
 
-        if ((slot & (SlotSize(sizeClass) - 1)) != 0) {
+        if (((ulong)slot & (SlotSize(sizeClass) - 1)) != 0) {
             Panic.WithMessage("slab: misaligned slot");
         }
 
         ((ulong*)slot)[0] = _heads.Head[sizeClass];
-        _heads.Head[sizeClass] = slot;
+        _heads.Head[sizeClass] = (ulong)slot;
     }
 
     internal static void DumpClass(int sizeClass) {
