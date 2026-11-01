@@ -131,8 +131,8 @@ internal static unsafe class Freelist {
         Console.Write(" - ");
         Console.WriteHexLine(end);
 
-        ranges[count * 2] = RoundDown(start);
-        ranges[count * 2 + 1] = RoundUp(end);
+        ranges[count * 2] = Align.RoundDown(start);
+        ranges[count * 2 + 1] = Align.RoundUp(end);
         count++;
     }
 
@@ -142,8 +142,8 @@ internal static unsafe class Freelist {
         Console.Write(" - ");
         Console.WriteHexLine(end);
 
-        var first = RoundUp(start);
-        var last = RoundDown(end);
+        var first = Align.RoundUp(start);
+        var last = Align.RoundDown(end);
 
         outer: for (var page = first; page < last; page += Paging.PageSize) {
             for (var i = 0; i < count; i++) {
@@ -163,14 +163,6 @@ internal static unsafe class Freelist {
 
         _head = address;
         FreePages++;
-    }
-
-    private static ulong RoundDown(ulong value) {
-        return (value >> 12) << 12;
-    }
-
-    private static ulong RoundUp(ulong value) {
-        return ((value + Paging.PageSize - 1) >> 12) << 12;
     }
     
     private static bool Overlaps(ulong page, ulong start, ulong end) {

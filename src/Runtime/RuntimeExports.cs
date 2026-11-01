@@ -16,7 +16,7 @@ public class RuntimeExports {
     
     [RuntimeExport("RhpNewFast")]
     private static unsafe void* RhpNewFast(MethodTable* methodTable) {
-        var slot = Slab.Alloc(methodTable->BaseSize);
+        var slot = Heap.Alloc(methodTable->BaseSize);
         var obj = slot + 8;
         *(MethodTable**)obj = methodTable;
 
@@ -31,7 +31,7 @@ public class RuntimeExports {
 
         var size = methodTable->BaseSize + (ulong)length * methodTable->ComponentSize;
 
-        var slot = Slab.Alloc(size);
+        var slot = Heap.Alloc(size);
         var obj = slot + 8;
         *(MethodTable**)obj = methodTable;
         *(int*)(obj + 8) = length;
@@ -46,6 +46,6 @@ public class RuntimeExports {
 
     [RuntimeExport("RhpFallbackFailFast")]
     private static void RhpFallbackFailFast() {
-        Panic.WithMessage((string)"stack corruption");
+        Panic.WithMessage("stack corruption");
     }
 }

@@ -47,7 +47,7 @@ internal static class HeapTest {
         Console.Write(sum);
         Console.WriteLine();
 
-        var squares = new ulong[100];
+        var squares = new ulong[1000];
         for (var i = 0; i < squares.Length; i++) {
             squares[i] = (ulong)(i * i);
         }

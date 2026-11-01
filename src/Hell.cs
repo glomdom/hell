@@ -34,9 +34,9 @@ internal class Hell {
         EnableInterrupts();
 
         Paging.Init(0x80000000);
-        Paging.Dump();
         
         HeapTest.Run();
+        Paging.Dump();
         
         IdleCore();
     }
