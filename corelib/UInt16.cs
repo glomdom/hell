@@ -4,4 +4,6 @@
 
 namespace System;
 
-public readonly struct UInt16;
+public readonly struct UInt16 {
+    public const ushort MaxValue = 0xFFFF;
+}

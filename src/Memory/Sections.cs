@@ -35,6 +35,14 @@ internal static class Sections {
     [MethodImpl(MethodImplOptions.InternalCall)]
     [RuntimeImport("_bss_end")]
     private static extern void BssEndSymbol();
+    
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    [RuntimeImport("__hell_symbols")]
+    private static extern void SymbolsStartSymbol();
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    [RuntimeImport("__hell_symbols_end")]
+    private static extern void SymbolsEndSymbol();
 
     internal static unsafe ulong TextStart => (ulong)(delegate*<void>)&TextStartSymbol;
     internal static unsafe ulong TextEnd => (ulong)(delegate*<void>)&TextEndSymbol;
@@ -44,4 +52,6 @@ internal static class Sections {
     internal static unsafe ulong DataEnd => (ulong)(delegate*<void>)&DataEndSymbol;
     internal static unsafe ulong BssStart => (ulong)(delegate*<void>)&BssStartSymbol;
     internal static unsafe ulong BssEnd => (ulong)(delegate*<void>)&BssEndSymbol;
+    internal static unsafe ulong SymbolsStart => (ulong)(delegate*<void>)&SymbolsStartSymbol;
+    internal static unsafe ulong SymbolsEnd => (ulong)(delegate*<void>)&SymbolsEndSymbol;
 }

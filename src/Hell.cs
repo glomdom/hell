@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime;
 using System.Runtime.CompilerServices;
@@ -19,9 +20,9 @@ internal class Hell {
         Console.WriteLine();
 
         var fdt = new Fdt(dtb);
-        
+
         Freelist.Init(in fdt);
-        
+
         if (fdt.TryFindNode("/cpus", out var cpus) && fdt.TryGetU32(cpus, "timebase-frequency", out var frequency)) {
             Console.Write("dtb: timer ");
             Console.Write(frequency / 1000 / 1000);
@@ -30,17 +31,16 @@ internal class Hell {
             Timer.Init(frequency, 10_000_000 / 10_000_000);
             EnableTimerInterrupt();
         }
-        
+
         EnableInterrupts();
 
         Paging.Init(0x80000000);
-        
-        HeapTest.Run();
-        Paging.Dump();
-        
+
+        throw new IndexOutOfRangeException();
+
         IdleCore();
     }
-    
+
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.InternalCall)]
     [RuntimeImport("enable_interrupts")]
