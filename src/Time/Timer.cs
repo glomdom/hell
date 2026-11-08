@@ -25,8 +25,6 @@ internal static class Timer {
 
         _deadline += _interval;
         Sbi.SetTimer(_deadline);
-        
-        Console.WriteLine("tick");
     }
     
     [MethodImpl(MethodImplOptions.InternalCall)]
