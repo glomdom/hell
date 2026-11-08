@@ -22,7 +22,6 @@ const ushort NoFile = ushort.MaxValue;
 var sdk = Env("DOTNET_SDK_DIR");
 var csc = Path.Combine(sdk, "Roslyn", "bincore", "csc.dll");
 var ilc = Env("ILC");
-var jit = Env("ILC_JIT");
 var clang = Env("CLANG", Tool("clang"));
 var lld = Env("LLD", Tool("ld.lld"));
 var nm = Env("LLVM_NM", Tool("llvm-nm"));
@@ -101,7 +100,7 @@ void Build() {
     Produce("ilc kernel.o", kernelObject, [kernelIl, corelib], ilc,
     [
         kernelIl, corelib, "-o", kernelObject, "--nativelib", "-g", "--systemmodule", "corelib", "--targetos", "linux", "--targetarch", "riscv64", "-O", "--map",
-        $"{Out}/kernel.map", "--jitpath", jit
+        $"{Out}/kernel.map"
     ]);
 
     List<string> objects = [kernelObject];
