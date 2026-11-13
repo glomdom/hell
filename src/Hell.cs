@@ -41,7 +41,7 @@ internal class Hell {
 
     [DoesNotReturn]
     [MethodImpl(MethodImplOptions.InternalCall)]
-    [RuntimeImport("enable_interrupts")]
+    [RuntimeImport("idle_hart")]
     private static extern void IdleCore();
 
     [MethodImpl(MethodImplOptions.InternalCall)]
