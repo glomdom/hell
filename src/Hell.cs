@@ -28,15 +28,13 @@ internal class Hell {
             Console.Write(frequency / 1000 / 1000);
             Console.WriteLine("MHz");
 
-            Timer.Init(frequency, 10_000_000 / 10_000_000);
+            Timer.Init(frequency, 100);
             EnableTimerInterrupt();
         }
 
         EnableInterrupts();
 
         Paging.Init(0x80000000);
-
-        throw new IndexOutOfRangeException();
 
         IdleCore();
     }
